@@ -1,0 +1,15 @@
+{
+    "name": "damian/router",
+    "autoload": {
+        "psr-4": {
+            "Damian\\Router\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Damian Wantzing",
+            "email": "damianwantzing@gmail.com"
+        }
+    ],
+    "require": {}
+}
