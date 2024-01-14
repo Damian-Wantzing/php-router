@@ -6,7 +6,8 @@ router->put("PATH/", HANDLERFUNC);
 router->delete("PATH/", HANDLERFUNC);
 
 HANDLERFUNC:
-function (HTTPREQUEST request): string
+request as a pointer if middleware wants to add anything to the params
+function (HTTPREQUEST &$request, HTTPRESPONSE $response)
 {
     $id = request.params("id");
 }

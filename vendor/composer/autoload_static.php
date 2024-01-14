@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit3f7af156b117fb878302aef74c280593
 {
     public static $prefixLengthsPsr4 = array (
-        'D' => 
+        'R' => 
         array (
-            'Damian\\Router\\' => 14,
+            'Router\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Damian\\Router\\' => 
+        'Router\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

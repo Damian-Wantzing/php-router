@@ -1,3 +1,0 @@
-<?php
-
-namespace Router;

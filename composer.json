@@ -2,7 +2,7 @@
     "name": "damian/router",
     "autoload": {
         "psr-4": {
-            "Damian\\Router\\": "src/"
+            "Router\\": "src/"
         }
     },
     "authors": [
