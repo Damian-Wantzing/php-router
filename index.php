@@ -6,14 +6,22 @@ require_once("vendor/autoload.php");
 
 $router = new Router();
 
-$router->get("/", function()
+$router->get("/test/{id}/{name}", function()
 {
-    echo "test";
+    echo "parameter";
 });
 
-$router->get("/test", function()
+$router->get("/test/exact/{name}", function()
 {
-    echo "hello";
+    echo "exact";
 });
 
 $router->handle();
+
+class test
+{
+    public static function handle()
+    {
+        echo "class";
+    }
+}
