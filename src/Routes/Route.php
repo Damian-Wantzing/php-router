@@ -8,13 +8,15 @@ class Route
 {
     private Method $method;
     private string $path;
+    private array $middleware;
     private $callback;
 
-    public function __construct(Method $method, string $path, callable $callback)
+    public function __construct(Method $method, string $path, callable $callback, array $middleware)
     {
         $this->method = $method;
         $this->path = $path;
         $this->callback = $callback;
+        $this->middleware = $middleware;
     }
 
     public function method(): Method
@@ -25,6 +27,11 @@ class Route
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function middleware(): array
+    {
+        return $this->middleware;
     }
 
     public function callback(): callable

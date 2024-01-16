@@ -18,27 +18,27 @@ class Router
         $this->routes = new Routes();
     }
 
-    public function get(string $path, callable $callback)
+    public function get(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Get, $path, $callback);
+        $route = new Route(Method::Get, $path, $callback, $middleware);
         $this->routes->add($route);
     }
 
-    public function post(string $path, callable $callback)
+    public function post(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Post, $path, $callback);
+        $route = new Route(Method::Post, $path, $callback, $middleware);
         $this->routes->add($route);
     }
 
-    public function put(string $path, callable $callback)
+    public function put(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Put, $path, $callback);
+        $route = new Route(Method::Put, $path, $callback, $middleware);
         $this->routes->add($route);
     }
 
-    public function delete(string $path, callable $callback)
+    public function delete(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Delete, $path, $callback);
+        $route = new Route(Method::Delete, $path, $callback, $middleware);
         $this->routes->add($route);
     }
 
@@ -55,6 +55,24 @@ class Router
         }
 
         $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
-        call_user_func($route->callback(), $request, new Response());
+
+        $this->middlewareStack($request, new Response(), $route->middleware());
+    }
+
+    private function middlewareStack(Request $request, Response $response, array $middlewares, int $index = 0)
+    {
+        if (!isset($middlewares[$index]))
+        {
+            // No more middlewares to run, so we call the handler
+            call_user_func($request->route()->callback(), $request, $response);
+            return;
+        }
+
+        $middleware = $middlewares[$index];
+
+        return $middleware($request, $response, function($request, $response) use ($middlewares, $index)
+        {
+            return $this->middlewareStack($request, $response, $middlewares, $index + 1);
+        });
     }
 }
