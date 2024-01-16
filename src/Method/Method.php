@@ -1,6 +1,6 @@
 <?php
 
-namespace Router;
+namespace Router\Method;
 
 enum Method: string
 {

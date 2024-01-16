@@ -1,8 +1,8 @@
 <?php
 
-namespace Router;
+namespace Router\Request;
 
-class RoutesException extends \Exception
+class RequestException extends \Exception
 {
     public function __construct(string $message, int $code = 0, \Throwable $previous = null)
     {

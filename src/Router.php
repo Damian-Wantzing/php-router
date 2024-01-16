@@ -2,6 +2,12 @@
 
 namespace Router;
 
+use Router\Method\Method;
+use Router\Request\Request;
+use Router\Routes\Route;
+use Router\Routes\Routes;
+use Router\Routes\RoutesException;
+
 class Router
 {
     private Routes $routes;
@@ -40,8 +46,8 @@ class Router
         try
         {
             $route = $this->routes->route(Method::tryFrom($_SERVER['REQUEST_METHOD']), $_SERVER['REQUEST_URI']);
-            print_r($route->parameters($_SERVER['REQUEST_URI']));
-            call_user_func($route->callback());
+            $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
+            call_user_func($route->callback(), $request);
         } 
         catch (RoutesException $e)
         {
