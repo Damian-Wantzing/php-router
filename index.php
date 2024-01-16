@@ -1,6 +1,8 @@
 <?php
 
+use Router\Request\Request;
 use Router\Router;
+use Router\Response\Response;
 
 require_once("vendor/autoload.php");
 
@@ -11,9 +13,19 @@ $router->get("/test/{id}/{name}", function()
     echo "parameter";
 });
 
-$router->get("/test/exact/{name}", function()
+$router->get("/redirect", function(Request $request, Response $response)
 {
-    echo "exact";
+    $response->redirect("/form");
+});
+
+$router->get("/status", function(Request $request, Response $response)
+{
+    $response->statuscode(400);
+});
+
+$router->post("/post", function(Request $request)
+{
+    echo $request->body();
 });
 
 $router->handle();

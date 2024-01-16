@@ -4,6 +4,7 @@ namespace Router;
 
 use Router\Method\Method;
 use Router\Request\Request;
+use Router\Response\Response;
 use Router\Routes\Route;
 use Router\Routes\Routes;
 use Router\Routes\RoutesException;
@@ -46,12 +47,14 @@ class Router
         try
         {
             $route = $this->routes->route(Method::tryFrom($_SERVER['REQUEST_METHOD']), $_SERVER['REQUEST_URI']);
-            $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
-            call_user_func($route->callback(), $request);
         } 
         catch (RoutesException $e)
         {
-            echo "404";
+            echo "404"; // TODO: use a 404 page or something similar
+            return;
         }
+
+        $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
+        call_user_func($route->callback(), $request, new Response());
     }
 }
