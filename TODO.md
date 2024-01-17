@@ -1,7 +1,12 @@
 TODOS:
-Middleware (all routes):
-router->use(MIDDLEWAREFUNC);
+INTERFACES for Request, Response, and other objects that are passed around frequently
 
-Daisy chaining:
-$middlewares = new Middlewares(MIDDLEWAREFIRST, MIDDLEWARESECOND, MIDDLEWARETHIRD);
-router->get("PATH", $middlewares(HANDLERFUNC));
+FILESERVER
+lookup in a directory for the requested path
+router->fileserver(PATH, DIRECTORY);
+e.g. router->fileserver("/static", __DIR__."/stat");
+root of /stat is uri/static
+so /static/file1 file1 will be in the /stat directory
+When no file is specified we will show the directory structure, through which a user can browse and click
+
+

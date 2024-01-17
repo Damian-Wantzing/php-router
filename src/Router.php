@@ -3,6 +3,7 @@
 namespace Router;
 
 use Router\Method\Method;
+use Router\Middlewares\Middlewares;
 use Router\Request\Request;
 use Router\Response\Response;
 use Router\Routes\Route;
@@ -12,34 +13,48 @@ use Router\Routes\RoutesException;
 class Router
 {
     private Routes $routes;
+    private Middlewares $middlewares;
 
     public function __construct()
     {
         $this->routes = new Routes();
+        $this->middlewares = new Middlewares();
     }
 
-    public function get(string $path, callable $callback, callable ...$middleware)
+    public function get(string $path, callable $callback, callable|Middlewares ...$middlewares)
     {
-        $route = new Route(Method::Get, $path, $callback, $middleware);
+        $mergedMiddlewares = array();
+        foreach ($middlewares as $middleware)
+        {
+            if ($middleware instanceof Middlewares) array_push($mergedMiddlewares, ...$middleware->toArray());
+            else array_push($mergedMiddlewares, $middleware);
+        }
+
+        $route = new Route(Method::Get, $path, $callback, new Middlewares(...$mergedMiddlewares));
         $this->routes->add($route);
     }
 
     public function post(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Post, $path, $callback, $middleware);
+        $route = new Route(Method::Post, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
     }
 
     public function put(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Put, $path, $callback, $middleware);
+        $route = new Route(Method::Put, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
     }
 
     public function delete(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Delete, $path, $callback, $middleware);
+        $route = new Route(Method::Delete, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
+    }
+
+    public function use(callable $middleware)
+    {
+        $this->middlewares->add($middleware);
     }
 
     public function handle()
@@ -56,16 +71,21 @@ class Router
 
         $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
 
-        $this->middlewareStack($request, new Response(), $route->middleware());
+        list($request, $response) = $this->middlewareStack(
+            $request, 
+            new Response(), 
+            array_merge($this->middlewares->toArray(), $route->middleware()->toArray())
+        );
+
+        call_user_func($route->callback(), $request, $response);
     }
 
-    private function middlewareStack(Request $request, Response $response, array $middlewares, int $index = 0)
+    private function middlewareStack(Request $request, Response $response, array $middlewares, int $index = 0): array
     {
         if (!isset($middlewares[$index]))
         {
-            // No more middlewares to run, so we call the handler
-            call_user_func($request->route()->callback(), $request, $response);
-            return;
+            // No more middlewares to run, so we return
+            return array($request, $response);
         }
 
         $middleware = $middlewares[$index];

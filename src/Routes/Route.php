@@ -3,20 +3,21 @@
 namespace Router\Routes;
 
 use Router\Method\Method;
+use Router\Middlewares\Middlewares;
 
 class Route
 {
     private Method $method;
     private string $path;
-    private array $middleware;
+    private Middlewares $middlewares;
     private $callback;
 
-    public function __construct(Method $method, string $path, callable $callback, array $middleware)
+    public function __construct(Method $method, string $path, callable $callback, Middlewares $middlewares)
     {
         $this->method = $method;
         $this->path = $path;
         $this->callback = $callback;
-        $this->middleware = $middleware;
+        $this->middlewares = $middlewares;
     }
 
     public function method(): Method
@@ -29,9 +30,9 @@ class Route
         return $this->path;
     }
 
-    public function middleware(): array
+    public function middleware(): Middlewares
     {
-        return $this->middleware;
+        return $this->middlewares;
     }
 
     public function callback(): callable
