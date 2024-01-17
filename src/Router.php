@@ -8,7 +8,7 @@ use Router\Request\HttpRequest;
 use Router\Request\Request;
 use Router\Response\HttpResponse;
 use Router\Response\Response;
-use Router\Routes\Route;
+use Router\Routes\HttpRoute;
 use Router\Routes\Routes;
 use Router\Routes\RoutesException;
 
@@ -32,25 +32,25 @@ class Router
             else array_push($mergedMiddlewares, $middleware);
         }
 
-        $route = new Route(Method::Get, $path, $callback, new Middlewares(...$mergedMiddlewares));
+        $route = new HttpRoute(Method::Get, $path, $callback, new Middlewares(...$mergedMiddlewares));
         $this->routes->add($route);
     }
 
     public function post(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Post, $path, $callback, new Middlewares(...$middleware));
+        $route = new HttpRoute(Method::Post, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
     }
 
     public function put(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Put, $path, $callback, new Middlewares(...$middleware));
+        $route = new HttpRoute(Method::Put, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
     }
 
     public function delete(string $path, callable $callback, callable ...$middleware)
     {
-        $route = new Route(Method::Delete, $path, $callback, new Middlewares(...$middleware));
+        $route = new HttpRoute(Method::Delete, $path, $callback, new Middlewares(...$middleware));
         $this->routes->add($route);
     }
 
