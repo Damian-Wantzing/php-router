@@ -4,6 +4,7 @@ namespace Router;
 
 use Router\Method\Method;
 use Router\Middlewares\Middlewares;
+use Router\Request\HttpRequest;
 use Router\Request\Request;
 use Router\Response\Response;
 use Router\Routes\Route;
@@ -69,7 +70,7 @@ class Router
             return;
         }
 
-        $request = new Request(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
+        $request = new HttpRequest(Method::tryFrom($_SERVER['REQUEST_METHOD']), $route, $_SERVER['REQUEST_URI']);
 
         list($request, $response) = $this->middlewareStack(
             $request, 
