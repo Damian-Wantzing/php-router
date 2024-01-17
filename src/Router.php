@@ -6,6 +6,7 @@ use Router\Method\Method;
 use Router\Middlewares\Middlewares;
 use Router\Request\HttpRequest;
 use Router\Request\Request;
+use Router\Response\HttpResponse;
 use Router\Response\Response;
 use Router\Routes\Route;
 use Router\Routes\Routes;
@@ -74,7 +75,7 @@ class Router
 
         list($request, $response) = $this->middlewareStack(
             $request, 
-            new Response(), 
+            new HttpResponse(), 
             array_merge($this->middlewares->toArray(), $route->middleware()->toArray())
         );
 

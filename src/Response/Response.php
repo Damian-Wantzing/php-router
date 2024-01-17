@@ -2,26 +2,13 @@
 
 namespace Router\Response;
 
-class Response
+interface Response
 {
-    public function setHeader(string $header, string $value)
-    {
-        header("{$header}: {$value}");
-    }
+    public function setHeader(string $header, string $value);
 
-    public function statuscode(int $code)
-    {
-        http_response_code($code);
-    }
+    public function statuscode(int $code);
 
-    public function send(string $content)
-    {
-        echo($content);
-    }
+    public function send(string $content);
 
-    public function redirect(string $uri)
-    {
-        $this->statuscode(301);
-        $this->setHeader("Location", $uri);
-    }
+    public function redirect(string $uri);
 }
