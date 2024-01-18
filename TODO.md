@@ -1,6 +1,4 @@
 TODOS:
-INTERFACES for Request, Response, and other objects that are passed around frequently
-
 FILESERVER
 lookup in a directory for the requested path
 router->fileserver(PATH, DIRECTORY);

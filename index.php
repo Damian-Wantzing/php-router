@@ -1,5 +1,6 @@
 <?php
 
+use Router\FileServer\FileServer;
 use Router\Middlewares\Middlewares;
 use Router\Request\Request;
 use Router\Router;
@@ -9,12 +10,12 @@ require_once("vendor/autoload.php");
 
 $router = new Router();
 
-$router->use(function(Request $request, Response $response, callable $next)
-{
-    echo "global middelware";
+// $router->use(function(Request $request, Response $response, callable $next)
+// {
+//     echo "global middelware";
 
-    return $next($request, $response);
-});
+//     return $next($request, $response);
+// });
 
 $middleware1 = function(Request $request, Response $response, callable $next)
 {
@@ -47,15 +48,30 @@ $middleware4 = function(Request $request, Response $response, callable $next)
     return $next($request, $response);
 };
 
-$router->get("/status", function(Request $request, Response $response)
+$router->get("/status/{test}", function(Request $request, Response $response)
 {
     $response->send("test with middleware");
 }, $middlewares, $middleware4);
+
+$router->get("/view/{id}", function(Request $request, Response $response)
+{
+    $test = "test string";
+
+    ob_start();
+    require(__DIR__."/templates/home.html");
+    $view = ob_get_clean();
+    
+    $response->send($view);
+});
 
 $router->post("/post", function(Request $request)
 {
     echo $request->body();
 });
+
+$fileserver = new FileServer(dir(__DIR__."/static"));
+
+$router->get("/statics", [$fileserver, 'handleRequest']);
 
 $router->handle();
 

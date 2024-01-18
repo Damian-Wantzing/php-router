@@ -4,7 +4,7 @@ namespace Router\Routes;
 
 use Router\Method\Method;
 
-class Routes
+class HttpRoutes implements Routes
 {
     private array $getRoutes;
     private array $postRoutes;
@@ -72,8 +72,20 @@ class Routes
         // split the path into parts
         $matchingPaths = $this->findMatchingPaths($paths, $pathToCheck);
 
-        // check if we have no matches, if so, throw an exception
-        if (count($matchingPaths) < 1) throw new RoutesException("No route found for path: " . $pathToCheck);
+        // check if we have no matches, if so, it might be a fileserver route
+        if (count($matchingPaths) < 1) 
+        {
+            // start reducing the path one at a time until we have a match
+            for ($i = 0; $i < count(explode("/", $pathToCheck)); $i++)
+            {
+                $pathToCheck = dirname($pathToCheck);
+                $matchingPaths = $this->findMatchingPaths($paths, $pathToCheck, false);
+                if (count($matchingPaths) > 0) return $matchingPaths[0];
+            }
+
+            // no fileserver route, so there is no route
+            throw new RoutesException("No route found for path: " . $pathToCheck);
+        }
         
         // if there is only one matching part return the part
         if (count($matchingPaths) == 1) return $matchingPaths[0];
@@ -82,7 +94,7 @@ class Routes
         return $this->findBestPath($matchingPaths);
     }
 
-    private function findMatchingPaths(array $paths, string $pathToCheck): array
+    private function findMatchingPaths(array $paths, string $pathToCheck, bool $matchParameters = true): array
     {
         $matchingPaths = array();
 
@@ -90,7 +102,7 @@ class Routes
         {
             // are the parts not the same length?
             if (count(explode('/', $storedPath)) != count(explode('/', $pathToCheck))) continue;
-            if (!$this->doPathsMatch($storedPath, $pathToCheck)) continue;
+            if (!$this->doPathsMatch($storedPath, $pathToCheck, $matchParameters)) continue;
 
             // all parts match
             $matchingPaths[] = $storedPath;
@@ -99,14 +111,14 @@ class Routes
         return $matchingPaths;
     }
 
-    private function doPathsMatch(string $storedPath, string $pathToCheck): bool
+    private function doPathsMatch(string $storedPath, string $pathToCheck, bool $matchParameters = true): bool
     {
         $storedPathParts = explode('/', $storedPath);
         $pathToCheckParts = explode('/', $pathToCheck);
 
         for ($i = 0; $i < count($storedPathParts); $i++)
         {
-            if ($storedPathParts[$i] != $pathToCheckParts[$i] && !$this->isParameter($storedPathParts[$i])) return false;
+            if ($storedPathParts[$i] != $pathToCheckParts[$i] && (!$matchParameters || !$this->isParameter($storedPathParts[$i]))) return false;
         }
 
         return true;

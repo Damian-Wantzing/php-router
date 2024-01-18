@@ -9,6 +9,7 @@ use Router\Request\Request;
 use Router\Response\HttpResponse;
 use Router\Response\Response;
 use Router\Routes\HttpRoute;
+use Router\Routes\HttpRoutes;
 use Router\Routes\Routes;
 use Router\Routes\RoutesException;
 
@@ -19,7 +20,7 @@ class Router
 
     public function __construct()
     {
-        $this->routes = new Routes();
+        $this->routes = new HttpRoutes();
         $this->middlewares = new Middlewares();
     }
 
