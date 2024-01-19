@@ -71,7 +71,7 @@ $router->post("/post", function(Request $request)
 
 $fileserver = new FileServer(dir(__DIR__."/static"));
 
-$router->get("/statics", [$fileserver, 'handleRequest']);
+$router->get("/static", [$fileserver, 'handleRequest']);
 
 $router->handle();
 

@@ -3,7 +3,7 @@
 namespace Router\FileServer;
 
 use Directory;
-use DirectoryIterator;
+use Router\FileServer\FileServerException;
 use Router\Request\Request;
 use Router\Response\Response;
 
@@ -24,8 +24,7 @@ class FileServer
 
         if (strpos($fullPath, $this->root->path) !== 0) {
             // The requested path is outside of the root directory
-            echo "404"; // TODO use different error handling mechanism
-            return;
+            throw new FileServerException("the requested path is not allowed");
         }
 
         if (is_dir($fullPath))
@@ -43,7 +42,7 @@ class FileServer
         }
         else
         {
-            echo "404"; // TODO use different error handling mechanism
+            throw new FileServerException("the requested path does not exist");
         }
     }
 }

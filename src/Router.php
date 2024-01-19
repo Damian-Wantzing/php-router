@@ -2,6 +2,7 @@
 
 namespace Router;
 
+use Router\FileServer\FileServerException;
 use Router\Method\Method;
 use Router\Middlewares\Middlewares;
 use Router\Request\HttpRequest;
@@ -17,11 +18,23 @@ class Router
 {
     private Routes $routes;
     private Middlewares $middlewares;
+    private $notFoundHandler;
 
     public function __construct()
     {
         $this->routes = new HttpRoutes();
         $this->middlewares = new Middlewares();
+        $this->notFoundHandler = [$this, 'notFoundHandler'];
+    }
+
+    public function notFound(callable $callback)
+    {
+        $this->notFoundHandler = $callback;
+    }
+
+    private function notFoundHandler()
+    {
+        echo "not found";
     }
 
     public function get(string $path, callable $callback, callable|Middlewares ...$middlewares)
@@ -68,7 +81,7 @@ class Router
         } 
         catch (RoutesException $e)
         {
-            echo "404"; // TODO: use a 404 page or something similar
+            call_user_func($this->notFoundHandler);
             return;
         }
 
@@ -80,7 +93,16 @@ class Router
             array_merge($this->middlewares->toArray(), $route->middleware()->toArray())
         );
 
-        call_user_func($route->callback(), $request, $response);
+        try
+        {
+            call_user_func($route->callback(), $request, $response);
+        }
+        catch (FileServerException $e)
+        {
+            call_user_func($this->notFoundHandler);
+            return;
+        }
+        
     }
 
     private function middlewareStack(Request $request, Response $response, array $middlewares, int $index = 0): array
