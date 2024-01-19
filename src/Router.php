@@ -32,9 +32,9 @@ class Router
         $this->notFoundHandler = $callback;
     }
 
-    private function notFoundHandler()
+    private function notFoundHandler(Request|null $request, Response $response)
     {
-        echo "not found";
+        $response->statuscode(404);
     }
 
     public function get(string $path, callable $callback, callable|Middlewares ...$middlewares)
@@ -81,7 +81,7 @@ class Router
         } 
         catch (RoutesException $e)
         {
-            call_user_func($this->notFoundHandler);
+            call_user_func($this->notFoundHandler, null, new HttpResponse());
             return;
         }
 
@@ -99,7 +99,7 @@ class Router
         }
         catch (FileServerException $e)
         {
-            call_user_func($this->notFoundHandler);
+            call_user_func($this->notFoundHandler, $request, new HttpResponse());
             return;
         }
         
