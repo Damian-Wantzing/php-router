@@ -10,12 +10,12 @@ require_once("vendor/autoload.php");
 
 $router = new Router();
 
-// $router->use(function(Request $request, Response $response, callable $next)
-// {
-//     echo "global middelware";
+$router->use(function(Request $request, Response $response, callable $next)
+{
+    echo "global middelware";
 
-//     return $next($request, $response);
-// });
+    return $next($request, $response);
+});
 
 $middleware1 = function(Request $request, Response $response, callable $next)
 {
@@ -74,11 +74,3 @@ $fileserver = new FileServer(dir(__DIR__."/static"));
 $router->get("/static", [$fileserver, 'handleRequest']);
 
 $router->handle();
-
-class test
-{
-    public static function handle()
-    {
-        echo "class";
-    }
-}
